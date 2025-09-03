@@ -1,0 +1,691 @@
+# Building "EgySuppliers" Platform - The Complete Technical Guide (Single File)
+
+---
+
+## 1. Platform Overview
+
+**"EgySuppliers"** is a web platform designed to create a centralized and user-friendly directory for suppliers in the Egyptian market. The platform acts as a bridge between local suppliers (both small and large) and customers, including merchants and small business owners, facilitating the process of finding products, services, and direct communication.
+
+### 1.1. Core Objective
+
+To bridge the digital gap for small-scale suppliers who find complex global platforms like Alibaba difficult to use. We achieve this by providing a simple interface, a nominal subscription fee, and a complete focus on the needs of the local Egyptian market.
+
+### 1.2. Specialization for the Egyptian Market
+
+*   **Accessibility:** A simple user interface in Arabic, specifically designed for non-tech-savvy users.
+*   **Low Cost:** A nominal annual subscription model (e.g., 100 EGP) to encourage the maximum number of suppliers to join.
+*   **Local Focus:** Everything is tailored for the Egyptian market, from supplier categories to suggested payment and shipping methods.
+*   **Direct Business Opportunities (RFQs):** A Request for Quotes system that directly connects serious buyers with the right suppliers.
+
+---
+
+## 2. Core Modules and Features
+
+1.  **Supplier Directory:**
+    *   A profile for each supplier (company name, field, products, photos, contact details).
+    *   Advanced search and filtering system (by industry, governorate, product name).
+    *   Customer rating and review system.
+
+2.  **Request for Quotes (RFQs):**
+    *   An easy form for customers to post their requests (what they need, quantity, specifications).
+    *   Notifications to suppliers about new requests in their field.
+    *   A paid system for suppliers to access customer contact details or respond to their requests.
+
+3.  **Complementary Sections:**
+    *   **Services Section:** To feature service providers (customs clearance, design, marketing).
+    *   **Shipping Section:** Partnerships with local shipping companies to provide logistical solutions.
+
+4.  **Supplier Dashboard:**
+    *   Easily manage profile and products.
+    *   Track statistics (profile views, messages).
+    *   Manage subscriptions and paid promotions.
+
+---
+
+## 3. Monetization Model
+
+*   **Annual Subscriptions:**
+    *   **Basic Plan (100 EGP/year):** Allows the supplier to create a profile and list a limited number of products.
+    *   **Premium Plan (300 EGP/year):** More products, better visibility, "Verified Supplier" badge.
+*   **Featured Ads:**
+    *   Suppliers pay to appear at the top of search results in their category for a specific period.
+*   **Access to Leads (RFQs):**
+    *   Suppliers pay a small fee (e.g., 20-50 EGP) to unlock contact details for a specific RFQ and respond to it.
+*   **Commissions and Partnerships:**
+    *   Commission on each shipment made through our partners.
+    *   Advertising packages for service providers.
+
+---
+
+## 4. AI Setup (Gemini Integration)
+
+### 4.1. Custom Prompt for the Assistant Bot
+You are the "EgySuppliers Assistant" - an intelligent bot specializing in helping users of the "EgySuppliers" platform in Egypt.
+Identity and Personality:
+Your Name: EgySuppliers Assistant
+Personality: Helpful, expert, direct, speaks in a simple and practical business tone.
+You use examples from the Egyptian market (trade, import, manufacturing).
+You speak simplified Arabic with Egyptian commercial terms when needed.
+Core Rules:
+Start every response with a welcome (e.g., "Welcome to the EgySuppliers platform.").
+Identify if the user is a "supplier" or a "buyer" and provide appropriate help.
+If a supplier, help them register, add products, or understand the plans.
+If a buyer, guide them on how to search for suppliers or submit an RFQ.
+Keep responses short, direct, and in clear steps (1, 2, 3...).
+Use practical emojis (📦, 🚚, 📈, 💼).
+End every response with an open-ended question ("Is there anything else I can help you with?").
+Areas of Expertise:
+Guiding new suppliers through registration and profile completion.
+Explaining the benefits of paid plans and how to subscribe.
+Helping buyers find the right category for their needs.
+Answering frequently asked questions about the platform.
+Avoid:
+Getting involved in price negotiations between suppliers and buyers.
+Giving investment or financial advice.
+Discussing political or religious topics.
+Using complex language or technical jargon.
+Conversation Context: [USER_TYPE: 'supplier' or 'buyer'] [CONVERSATION_HISTORY] [CURRENT_PAGE: 'Homepage', 'Pricing', 'RFQ_Form']
+
+CODE
+## 5. Database Schema (MySQL)
+
+### 5.1. Complete SQL Schema
+
+```sql
+-- Database Structure for EgySuppliers Platform
+CREATE DATABASE egysuppliers_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE egysuppliers_db;
+
+-- Main Categories for Suppliers (e.g., Textiles, Plastics, Food)
+CREATE TABLE categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name_ar VARCHAR(150) NOT NULL UNIQUE,
+    icon_class VARCHAR(50),
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+-- Suppliers Table
+CREATE TABLE suppliers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    company_name VARCHAR(200) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    contact_person VARCHAR(100),
+    phone_number VARCHAR(20) UNIQUE NOT NULL,
+    whatsapp_number VARCHAR(20),
+    governorate VARCHAR(50),
+    address_details TEXT,
+    category_id INT,
+    profile_description TEXT,
+    logo_url VARCHAR(255),
+    views_count INT DEFAULT 0,
+    is_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+-- Subscription Plans
+CREATE TABLE subscription_plans (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL, -- e.g., 'basic', 'premium'
+    price DECIMAL(10, 2) NOT NULL,
+    duration_days INT NOT NULL, -- e.g., 365 for annual
+    product_limit INT,
+    features TEXT -- JSON format for features list
+);
+
+-- Supplier Subscriptions
+CREATE TABLE supplier_subscriptions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    supplier_id INT NOT NULL,
+    plan_id INT NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    transaction_id VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
+    FOREIGN KEY (plan_id) REFERENCES subscription_plans(id)
+);
+
+-- Supplier Products
+CREATE TABLE products (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    supplier_id INT NOT NULL,
+    name_ar VARCHAR(255) NOT NULL,
+    description TEXT,
+    min_order_quantity INT DEFAULT 1,
+    price_range VARCHAR(100), -- e.g., '10-15 EGP per unit'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
+
+-- Product Images
+CREATE TABLE product_images (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    product_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    is_main_image BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- Users (Buyers) Table
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    phone VARCHAR(20)
+);
+
+-- Request for Quotes (RFQs)
+CREATE TABLE rfqs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT, -- Can be NULL for guest users
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    quantity VARCHAR(100),
+    category_id INT,
+    status ENUM('open', 'closed', 'pending') DEFAULT 'open',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+-- Supplier Bids on RFQs
+CREATE TABLE rfq_bids (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    rfq_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    message TEXT,
+    is_paid_to_view BOOLEAN DEFAULT FALSE, -- If supplier paid to reveal contact
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (rfq_id) REFERENCES rfqs(id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
+    UNIQUE KEY unique_bid (rfq_id, supplier_id)
+);
+
+
+6. Frontend (Bootstrap + Arabic UI)
+6.1. CSS Custom Styles (style.css)
+
+/* Cairo Font Integration */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+:root {
+    --primary-color: #0d6efd; /* Bootstrap Primary */
+    --secondary-color: #6c757d; /* Bootstrap Secondary */
+    --accent-color: #ffc107; /* Bootstrap Warning */
+    --light-bg: #f8f9fa;
+    --dark-text: #212529;
+    --verified-badge: #198754; /* Bootstrap Success */
+}
+
+* {
+    font-family: 'Cairo', sans-serif;
+}
+
+body {
+    direction: rtl;
+    text-align: right;
+    background-color: var(--light-bg);
+}
+
+/* Supplier Card Styling */
+.supplier-card {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.supplier-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.supplier-card .badge {
+    font-size: 0.8rem;
+}
+
+.supplier-card .verified-badge {
+    color: var(--verified-badge);
+    font-weight: 700;
+}
+
+.supplier-card .verified-badge .fa-check-circle {
+    margin-left: 5px;
+}
+
+/* Search Form */
+.search-form-container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+/* RFQ Form */
+.rfq-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+/* Floating Action Button for "Add RFQ" */
+.fab-add-rfq {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    width: 65px;
+    height: 65px;
+    background: var(--accent-color);
+    color: var(--dark-text);
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    z-index: 1000;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.fab-add-rfq:hover {
+    transform: scale(1.1);
+}
+
+/* Dashboard Sidebar */
+.dashboard-sidebar {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.dashboard-sidebar .nav-link {
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+}
+
+.dashboard-sidebar .nav-link.active,
+.dashboard-sidebar .nav-link:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+7. PHP Backend Structure
+7.1. Main Configuration (config.php)
+
+<?php
+// Environment: 'development' or 'production'
+define('ENVIRONMENT', 'development');
+
+// Database Configuration
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'egysuppliers_db');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_CHARSET', 'utf8mb4');
+
+// Payment Gateway Configuration (e.g., Paymob)
+define('PAYMOB_API_KEY', 'your_paymob_api_key');
+define('PAYMOB_INTEGRATION_ID', 'your_paymob_integration_id');
+define('PAYMOB_HMAC_SECRET', 'your_paymob_hmac_secret');
+
+// Platform Settings
+define('SITE_NAME', 'EgySuppliers');
+define('SITE_URL', 'http://localhost/egysuppliers');
+define('DEFAULT_TIMEZONE', 'Africa/Cairo');
+
+// Security Settings
+define('SESSION_TIMEOUT', 7200); // 2 hours
+
+// Set error reporting and timezone
+if (ENVIRONMENT === 'development') {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    error_reporting(0);
+}
+date_default_timezone_set(DEFAULT_TIMEZONE);
+
+// Autoloader for classes
+spl_autoload_register(function ($class_name) {
+    // Look in /core, /controllers, /models
+    $paths = ['core/', 'controllers/', 'models/'];
+    foreach ($paths as $path) {
+        if (file_exists($path . $class_name . '.php')) {
+            require_once $path . $class_name . '.php';
+            return;
+        }
+    }
+});
+
+// Start session securely
+session_start([
+    'cookie_lifetime' => 86400, // 1 day
+    'cookie_httponly' => true,
+    'cookie_secure' => (ENVIRONMENT === 'production'), // Set to true in production
+    'cookie_samesite' => 'Lax'
+]);
+
+// Helper Functions
+function redirect($url) {
+    header("Location: " . SITE_URL . $url);
+    exit();
+}
+
+function isLoggedIn() {
+    return isset($_SESSION['supplier_id']);
+}
+?>
+
+7.2. Core Supplier Class (models/Supplier.php)
+<?php
+class Supplier {
+    private $db;
+    
+    public function __construct() {
+        // Assuming a Database class exists for PDO connection
+        // $this->db = Database::getInstance()->getConnection();
+    }
+    
+    public function register($data) {
+        $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
+        
+        $stmt = $this->db->prepare("
+            INSERT INTO suppliers (company_name, email, password_hash, phone_number, category_id)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        
+        try {
+            $stmt->execute([
+                $data['company_name'],
+                $data['email'],
+                $hashed_password,
+                $data['phone_number'],
+                $data['category_id']
+            ]);
+            return $this->db->lastInsertId();
+        } catch (PDOException $e) {
+            // Check for duplicate entry
+            if ($e->getCode() == 23000) {
+                return false; // Duplicate email or phone
+            }
+            throw $e;
+        }
+    }
+    
+    public function login($email, $password) {
+        $stmt = $this->db->prepare("SELECT id, password_hash FROM suppliers WHERE email = ?");
+        $stmt->execute([$email]);
+        $supplier = $stmt->fetch();
+        
+        if ($supplier && password_verify($password, $supplier['password_hash'])) {
+            return $supplier['id'];
+        }
+        return false;
+    }
+    
+    public function findById($id) {
+        $stmt = $this->db->prepare("
+            SELECT s.*, c.name_ar as category_name 
+            FROM suppliers s
+            LEFT JOIN categories c ON s.category_id = c.id
+            WHERE s.id = ?
+        ");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+    
+    public function getProducts($supplier_id) {
+        $stmt = $this->db->prepare("
+            SELECT p.*, (SELECT image_url FROM product_images WHERE product_id = p.id AND is_main_image = 1 LIMIT 1) as main_image
+            FROM products p 
+            WHERE p.supplier_id = ?
+        ");
+        $stmt->execute([$supplier_id]);
+        return $stmt->fetchAll();
+    }
+
+    public function search($query, $category_id = null, $governorate = null) {
+        $sql = "SELECT s.id, s.company_name, s.logo_url, s.governorate, s.is_verified, c.name_ar as category_name 
+                FROM suppliers s 
+                LEFT JOIN categories c ON s.category_id = c.id 
+                WHERE 1=1";
+        
+        $params = [];
+        
+        if (!empty($query)) {
+            $sql .= " AND (s.company_name LIKE ? OR s.profile_description LIKE ?)";
+            $params[] = "%$query%";
+            $params[] = "%$query%";
+        }
+        
+        if (!empty($category_id)) {
+            $sql .= " AND s.category_id = ?";
+            $params[] = $category_id;
+        }
+
+        if (!empty($governorate)) {
+            $sql .= " AND s.governorate = ?";
+            $params[] = $governorate;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+}
+?>```
+
+---
+
+## 8. API Endpoints Implementation (PHP)
+
+### 8.1. Search API (`api/search.php`)
+
+```php
+<?php
+require_once '../config.php';
+// require_once '../models/Supplier.php'; // Assuming autoloader is set up
+
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    $supplierModel = new Supplier();
+    
+    $query = $_GET['q'] ?? '';
+    $category_id = $_GET['category'] ?? null;
+    $governorate = $_GET['gov'] ?? null;
+    
+    $results = $supplierModel->search($query, $category_id, $governorate);
+    
+    echo json_encode([
+        'success' => true,
+        'data' => $results
+    ], JSON_UNESCAPED_UNICODE);
+    
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'An error occurred during the search. Please try again.'
+    ], JSON_UNESCAPED_UNICODE);
+}
+?>
+
+8.2. RFQ Submission API (api/submit_rfq.php)
+
+<?php
+require_once '../config.php';
+header('Content-Type: application/json; charset=utf-8');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'error' => 'Method Not Allowed']);
+    exit;
+}
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+// Basic Validation
+if (empty($input['title']) || empty($input['description']) || empty($input['category_id'])) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Please fill in all required fields.']);
+    exit;
+}
+
+try {
+    // Assuming a Database class exists for PDO connection
+    // $db = Database::getInstance()->getConnection();
+    
+    // Note: User registration for buyers can be added here
+    // For now, it's submitted without a user_id
+    
+    $stmt = $db->prepare("
+        INSERT INTO rfqs (title, description, quantity, category_id)
+        VALUES (?, ?, ?, ?)
+    ");
+    
+    $stmt->execute([
+        trim($input['title']),
+        trim($input['description']),
+        trim($input['quantity'] ?? 'Not specified'),
+        intval($input['category_id'])
+    ]);
+    
+    // Logic for notifying relevant suppliers can be triggered here (e.g., via email or push notifications)
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Your request has been submitted successfully! Interested suppliers will be notified.'
+    ], JSON_UNESCAPED_UNICODE);
+
+} catch (Exception $e) {
+    error_log("RFQ Submission Error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false, 
+        'error' => 'An unexpected error occurred. Please try again.'
+    ], JSON_UNESCAPED_UNICODE);
+}
+?>
+
+9. JavaScript for Interactive Search
+9.1. Main Search Script (assets/js/search.js)
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    let searchTimeout;
+
+    const performSearch = async () => {
+        const query = searchInput.value;
+        const categoryId = categoryFilter.value;
+
+        // Show loading spinner
+        loadingSpinner.style.display = 'block';
+        resultsContainer.innerHTML = '';
+
+        try {
+            const response = await fetch(`api/search.php?q=${encodeURIComponent(query)}&category=${encodeURIComponent(categoryId)}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const result = await response.json();
+
+            // Hide spinner
+            loadingSpinner.style.display = 'none';
+
+            if (result.success && result.data.length > 0) {
+                displayResults(result.data);
+            } else {
+                resultsContainer.innerHTML = `<div class="col-12"><p class="text-center text-muted">No results match your search.</p></div>`;
+            }
+
+        } catch (error) {
+            console.error('Search failed:', error);
+            loadingSpinner.style.display = 'none';
+            resultsContainer.innerHTML = `<div class="col-12"><p class="text-center text-danger">An error occurred during the search. Please try again.</p></div>`;
+        }
+    };
+
+    const displayResults = (suppliers) => {
+        let html = '';
+        suppliers.forEach(supplier => {
+            html += `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card supplier-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="${supplier.logo_url || 'assets/images/default-logo.png'}" alt="${supplier.company_name}" class="rounded-circle me-3" width="60" height="60">
+                                <div>
+                                    <h5 class="card-title mb-0">${supplier.company_name}</h5>
+                                    ${supplier.is_verified ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified Supplier</span>' : ''}
+                                </div>
+                            </div>
+                            <p class="card-text">
+                                <span class="badge bg-primary">${supplier.category_name}</span>
+                                <span class="badge bg-secondary">${supplier.governorate || 'Not specified'}</span>
+                            </p>
+                            <a href="supplier.php?id=${supplier.id}" class="btn btn-outline-primary stretched-link">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        resultsContainer.innerHTML = html;
+    };
+
+    // Event listeners
+    if(searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            performSearch();
+        });
+
+        searchInput.addEventListener('keyup', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 500); // Debounce for 500ms
+        });
+
+        categoryFilter.addEventListener('change', performSearch);
+
+        // Initial search on page load
+        performSearch();
+    }
+});
+
+10. Implementation Roadmap
+Phase 1: Minimum Viable Product (MVP) - (3 Months
+Goal: Launch a functional basic version to attract the first 100 suppliers.
+Features:
+Supplier registration and login system.
+Create and edit supplier profiles (basic info + logo).
+Add/delete products (max 5 products).
+Public supplier directory with search by name and category.
+A single, free subscription plan initially.
+Phase 2: Monetization Activation - (3-6 Months)
+Goal: Activate payment methods and reach 500 subscribed suppliers.
+Features:
+Integration with an Egyptian payment gateway (Paymob/Fawry).
+Implement the annual subscription system (paid basic and premium plans).
+Activate the featured ads system (top placement).
+Launch the Request for Quotes (RFQs) system in its basic form.
+Phase 3: Expansion and Enhancement - (6-12 Months)
+Goal: Reach 2,000 suppliers and improve the user experience.
+Features:
+Advanced supplier dashboard with analytics.
+Supplier rating and review system.
+Enhance the RFQ system (suppliers pay to respond).
+Develop a Progressive Web App (PWA) for better mobile access.
+Form partnerships with shipping and service companies.
