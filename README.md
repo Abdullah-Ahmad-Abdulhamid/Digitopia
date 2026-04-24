@@ -1,182 +1,250 @@
-# منصة مهاراتي - Maharati Platform
+# 🎓 Maharati Platform
 
-منصة تعليمية متخصصة في تعليم المهارات الحياتية للشباب المصري مع دعم الذكاء الاصطناعي.
-
-## 🌟 المميزات
-
-- **محتوى مخصص للثقافة المصرية**: أمثلة وحالات دراسة من البيئة المصرية
-- **مساعد ذكي بالعربية**: يستخدم Google Gemini AI لتقديم نصائح مخصصة
-- **تحديات يومية تفاعلية**: تحديات عملية لتطبيق المهارات المتعلمة
-- **تتبع التقدم**: نظام نقاط ومستويات لتحفيز التعلم
-- **تطبيق ويب تقدمي (PWA)**: يعمل على جميع الأجهزة مع دعم العمل بدون إنترنت
-- **واجهة عربية متجاوبة**: مصممة خصيصاً للمستخدمين العرب
-
-## 🎯 المهارات المتاحة
-
-### 💰 إدارة المال
-- أساسيات إدارة الميزانية الشخصية
-- استراتيجيات الادخار الذكي
-- الاستثمار البسيط للمبتدئين
-
-### 💼 مهارات العمل
-- كتابة السيرة الذاتية الاحترافية
-- إتقان مقابلات العمل
-- مهارات التفاوض على الراتب
-
-### 🗣️ التواصل والعلاقات
-- فن التواصل الفعال
-- بناء شبكة علاقات مهنية
-- إدارة الصراعات
-
-### 🧠 الصحة النفسية
-- إدارة التوتر والضغوط
-- بناء الثقة بالنفس
-- تحديد الأهداف الشخصية
-
-### 📚 التطوير الشخصي
-- تحديد الأهداف وتحقيقها
-- إدارة الوقت بفعالية
-- تطوير عادات إيجابية
-
-### 💻 التكنولوجيا
-- أساسيات استخدام الحاسوب
-- مهارات الإنترنت الأساسية
-- الأمان الرقمي
-
-## 🛠️ التقنيات المستخدمة
-
-- **Backend**: PHP 8.0+
-- **Database**: MySQL 8.0
-- **Frontend**: Bootstrap 5.3 + HTML5 + CSS3 + JavaScript ES6
-- **AI Integration**: Google Gemini API
-- **Typography**: Cairo Font Family
-- **Icons**: FontAwesome Pro
-- **PWA**: Service Worker + Web App Manifest
-
-## 📋 متطلبات التشغيل
-
-- PHP 8.0 أو أحدث
-- MySQL 8.0 أو أحدث
-- خادم ويب (Apache/Nginx)
-- مفتاح Google Gemini API (اختياري للذكاء الاصطناعي)
-
-## 🚀 التثبيت والإعداد
-
-### 1. تحميل الملفات
-```bash
-git clone https://github.com/your-repo/maharati-platform.git
-cd maharati-platform
-```
-
-### 2. إعداد قاعدة البيانات
-1. تأكد من تشغيل خادم MySQL
-2. افتح المتصفح واذهب إلى `http://localhost/ay%20haga/setup.php`
-3. اتبع خطوات الإعداد التلقائي
-
-### 3. تكوين Gemini AI (اختياري)
-1. احصل على مفتاح API من [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. افتح ملف `config/config.php`
-3. استبدل `your_gemini_api_key_here` بمفتاحك الفعلي
-
-### 4. إعداد الخادم
-- تأكد من تمكين `mod_rewrite` في Apache
-- اضبط صلاحيات المجلدات:
-  ```bash
-  chmod 755 uploads/
-  chmod 755 logs/
-  ```
-
-## 👤 بيانات المستخدم التجريبي
-
-بعد التثبيت، يمكنك استخدام هذه البيانات للدخول:
-
-- **البريد الإلكتروني**: demo@maharati.com
-- **كلمة المرور**: 123456
-
-## 📱 استخدام التطبيق
-
-### للمستخدمين الجدد:
-1. انقر على "إنشاء حساب جديد"
-2. املأ البيانات المطلوبة
-3. ابدأ بتصفح المهارات المتاحة
-4. جرب المساعد الذكي للحصول على نصائح مخصصة
-
-### للمستخدمين المسجلين:
-1. سجل دخولك باستخدام بريدك الإلكتروني
-2. تابع تقدمك في لوحة التحكم
-3. أكمل التحديات اليومية لكسب النقاط
-4. تفاعل مع المساعد الذكي لتعلم مهارات جديدة
-
-## 🔧 الإعدادات المتقدمة
-
-### تخصيص المظهر
-- عدل ملف `css/style.css` لتغيير الألوان والخطوط
-- استخدم متغيرات CSS المعرفة في `:root`
-
-### إضافة مهارات جديدة
-1. ادخل إلى قاعدة البيانات
-2. أضف تصنيف جديد في جدول `skill_categories`
-3. أضف المهارات في جدول `skills`
-
-### تكوين الإشعارات
-- عدل ملف `sw.js` لتخصيص إشعارات التحديات
-- اضبط أوقات الإشعارات في الكود
-
-## 🔒 الأمان
-
-- احذف ملف `setup.php` بعد التثبيت
-- غير كلمات المرور الافتراضية في `config/config.php`
-- استخدم HTTPS في الإنتاج
-- حدث مفاتيح التشفير بانتظام
-
-## 📊 إدارة المحتوى
-
-### إضافة تحديات يومية
-```sql
-INSERT INTO daily_challenges (title_ar, description_ar, challenge_date, difficulty, reward_points) 
-VALUES ('عنوان التحدي', 'وصف التحدي', '2024-01-01', 'easy', 10);
-```
-
-### مراقبة الأداء
-- راجع ملفات السجل في مجلد `logs/`
-- استخدم أدوات مراقبة قاعدة البيانات
-- تابع استخدام API الذكاء الاصطناعي
-
-## 🤝 المساهمة
-
-نرحب بمساهماتكم لتطوير المنصة:
-
-1. Fork المشروع
-2. أنشئ فرع للميزة الجديدة (`git checkout -b feature/AmazingFeature`)
-3. Commit التغييرات (`git commit -m 'Add some AmazingFeature'`)
-4. Push للفرع (`git push origin feature/AmazingFeature`)
-5. افتح Pull Request
-
-## 📝 الترخيص
-
-هذا المشروع مرخص تحت رخصة MIT - راجع ملف [LICENSE](LICENSE) للتفاصيل.
-
-## 📞 الدعم والتواصل
-
-- **البريد الإلكتروني**: support@maharati.com
-- **الموقع**: https://maharati.com
-- **التوثيق**: https://docs.maharati.com
-
-## 🙏 شكر وتقدير
-
-- [Google Gemini](https://ai.google.dev/) للذكاء الاصطناعي
-- [Bootstrap](https://getbootstrap.com/) لإطار العمل
-- [FontAwesome](https://fontawesome.com/) للأيقونات
-- [Cairo Font](https://fonts.google.com/specimen/Cairo) للخط العربي
+**AI-Powered Life Skills Platform for Egyptian Youth**
 
 ---
 
-**ملاحظة**: هذا المشروع تعليمي ومفتوح المصدر. نشجع على استخدامه وتطويره لخدمة المجتمع العربي.
+## 📸 Preview
 
-## 🔄 التحديثات الأخيرة
+<!-- Add screenshots or GIF here -->
 
-- **v1.0.0**: الإصدار الأول مع جميع المميزات الأساسية
-- دعم PWA للعمل بدون إنترنت
-- تكامل مع Google Gemini AI
-- واجهة عربية متجاوبة بالكامل
-- نظام تحديات يومية تفاعلي
+<!-- ![App Screenshot](your_image_link_here) -->
+
+---
+
+## 📑 Table of Contents
+
+* [Features](#-features)
+* [Available Skills](#-available-skills)
+* [Technologies Used](#-technologies-used)
+* [Requirements](#-requirements)
+* [Installation & Setup](#-installation--setup)
+* [Usage](#-using-the-application)
+* [Advanced Settings](#-advanced-settings)
+* [Security](#-security)
+* [Contribution](#-contribution)
+* [License](#-license)
+
+---
+
+## 🌟 Features
+
+* 🇪🇬 Content tailored to Egyptian culture
+* 🤖 AI Assistant powered by Google Gemini
+* 🎯 Interactive daily challenges
+* 📊 Progress tracking system (points & levels)
+* 📱 Progressive Web App (PWA) with offline support
+* 🌍 Fully responsive Arabic interface
+
+---
+
+## 🎯 Available Skills
+
+### 💰 Financial Management
+
+* Personal budgeting basics
+* Smart saving strategies
+* Simple investing for beginners
+
+### 💼 Career Skills
+
+* Professional CV writing
+* Mastering job interviews
+* Salary negotiation
+
+### 🗣️ Communication & Relationships
+
+* Effective communication
+* Building professional networks
+* Conflict management
+
+### 🧠 Mental Health
+
+* Stress management
+* Building self-confidence
+* Goal setting
+
+### 📚 Personal Development
+
+* Time management
+* Building positive habits
+* Achieving goals
+
+### 💻 Technology
+
+* Computer basics
+* Internet essentials
+* Digital security
+
+---
+
+## 🛠️ Technologies Used
+
+* **Backend:** PHP 8.0+
+* **Database:** MySQL 8.0
+* **Frontend:** Bootstrap 5.3, HTML5, CSS3, JavaScript (ES6)
+* **AI Integration:** Google Gemini API
+* **PWA:** Service Worker + Web App Manifest
+* **Icons:** FontAwesome
+* **Font:** Cairo
+
+---
+
+## 📋 Requirements
+
+* PHP 8.0 or higher
+* MySQL 8.0 or higher
+* Apache or Nginx
+* Google Gemini API Key (optional)
+
+---
+
+## 🚀 Installation & Setup
+
+### 1) Clone the repository
+
+```bash
+git clone https://github.com/Abdullah-Ahmad-Abdulhamid/Digitopia.git
+cd maharati_platform
+```
+
+---
+
+### 2) Database Setup
+
+* Start MySQL server
+* Open in browser:
+
+```
+http://localhost/setup.php
+```
+
+* Follow setup instructions
+
+---
+
+### 3) Configure AI (Optional)
+
+* Get API key from Google AI Studio
+* Open:
+
+```
+config/config.php
+```
+
+* Replace:
+
+```
+your_gemini_api_key_here
+```
+
+---
+
+### 4) Server Configuration
+
+* Enable Apache mod_rewrite
+* Set permissions:
+
+```bash
+chmod 755 uploads/
+chmod 755 logs/
+```
+
+---
+
+## 👤 Demo Account
+
+* **Email:** [demo@maharati.com](mailto:demo@maharati.com)
+* **Password:** 123456
+
+---
+
+## 📱 Using the Application
+
+### New Users
+
+* Create an account
+* Explore skills
+* Use AI assistant
+
+### Existing Users
+
+* Login
+* Track progress
+* Complete daily challenges
+
+---
+
+## 🔧 Advanced Settings
+
+### Customize UI
+
+Edit:
+
+```
+css/style.css
+```
+
+### Add Skills
+
+* Insert into `skill_categories`
+* Insert into `skills`
+
+---
+
+## 🔒 Security
+
+* ❗ Delete `setup.php` after installation
+* 🔐 Use HTTPS in production
+* 🔑 Change default credentials
+
+---
+
+## 🤝 Contribution
+
+1. Fork the project
+2. Create a branch
+
+```bash
+git checkout -b feature/new-feature
+```
+
+3. Commit changes
+
+```bash
+git commit -m "Add new feature"
+```
+
+4. Push
+
+```bash
+git push origin feature/new-feature
+```
+
+5. Open Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 🙏 Acknowledgments
+
+* Google Gemini AI
+* Bootstrap
+* FontAwesome
+* Cairo Font
+
+---
+
+## 🔄 Version
+
+**v1.0.0**
+
+* Initial release
+* AI integration
+* PWA support
+* Responsive UI
