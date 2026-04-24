@@ -4,29 +4,6 @@
 
 ---
 
-## 📸 Preview
-
-<!-- Add screenshots or GIF here -->
-
-<!-- ![App Screenshot](your_image_link_here) -->
-
----
-
-## 📑 Table of Contents
-
-* [Features](#-features)
-* [Available Skills](#-available-skills)
-* [Technologies Used](#-technologies-used)
-* [Requirements](#-requirements)
-* [Installation & Setup](#-installation--setup)
-* [Usage](#-using-the-application)
-* [Advanced Settings](#-advanced-settings)
-* [Security](#-security)
-* [Contribution](#-contribution)
-* [License](#-license)
-
----
-
 ## 🌟 Features
 
 * 🇪🇬 Content tailored to Egyptian culture
