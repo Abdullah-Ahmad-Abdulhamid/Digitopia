@@ -9,4 +9,4 @@ if (isLoggedIn()) {
 
 // Redirect to login page
 redirectTo('login.php');
-?>
+?>  
